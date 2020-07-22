@@ -30,17 +30,20 @@ func init() {
 func main() {
 	flag.Parse()
 
-	res, err := collectMetrics(destFlag)
-	if err != nil {
+	if err:=mtrRun(destFlag, urlFlag, dbFlag); err!=nil {
 		log.Fatal(err)
+	}
+}
+
+func mtrRun(dest string, ifxURL string, ifxDB string) error {
+	res, err := collectMetrics(dest)
+	if err != nil {
+		return err
 	}
 	if verboseFlag {
-		log.Printf("Collect %q:\n%s\n", destFlag, res.Report.String())
+		log.Printf("Collect %q:\n%s\n", dest, res.Report.String())
 	}
-
-	if err = publishMetrics(urlFlag, dbFlag, res); err != nil {
-		log.Fatal(err)
-	}
+	return publishMetrics(ifxURL, ifxDB, res)
 }
 
 func publishMetrics(influxURL string, influxDB string, result *mtrResult) error {
